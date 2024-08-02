@@ -344,8 +344,8 @@ class AsyncVectorStore:
     async def max_marginal_relevance_search(
         self,
         *,
-        embedding_service: AsyncEmbeddingService,
-        query: str,
+        query: Optional[str],
+        query_embedding: Optional[List[float]] = None,
         vector_field: str,
         k: int = 4,
         num_candidates: int = 20,
@@ -361,6 +361,8 @@ class AsyncVectorStore:
             among selected documents.
 
         :param query (str): Text to look up documents similar to.
+        :param query_embedding: Input embedding vector. If given, input query string is
+            ignored.
         :param k (int): Number of Documents to return. Defaults to 4.
         :param fetch_k (int): Number of Documents to fetch to pass to MMR algorithm.
         :param lambda_mult (float): Number between 0 and 1 that determines the degree
@@ -381,7 +383,10 @@ class AsyncVectorStore:
             remove_vector_query_field_from_metadata = False
 
         # Embed the query
-        query_embedding = await embedding_service.embed_query(query)
+        if self.embedding_service and not query_embedding:
+            if not query:
+                raise ValueError("specify a query or a query_embedding to search")
+            query_embedding = await self.embedding_service.embed_query(query)
 
         # Fetch the initial documents
         got_hits = await self.search(

@@ -834,7 +834,6 @@ class TestVectorStore:
         store.add_texts(texts)
 
         mmr_output = store.max_marginal_relevance_search(
-            embedding_service=embedding_service,
             query=texts[0],
             vector_field=vector_field,
             k=3,
@@ -844,7 +843,6 @@ class TestVectorStore:
         assert mmr_output == sim_output
 
         mmr_output = store.max_marginal_relevance_search(
-            embedding_service=embedding_service,
             query=texts[0],
             vector_field=vector_field,
             k=2,
@@ -855,7 +853,6 @@ class TestVectorStore:
         assert mmr_output[1]["_source"][text_field] == texts[1]
 
         mmr_output = store.max_marginal_relevance_search(
-            embedding_service=embedding_service,
             query=texts[0],
             vector_field=vector_field,
             k=2,
@@ -868,7 +865,6 @@ class TestVectorStore:
 
         # if fetch_k < k, then the output will be less than k
         mmr_output = store.max_marginal_relevance_search(
-            embedding_service=embedding_service,
             query=texts[0],
             vector_field=vector_field,
             k=3,
